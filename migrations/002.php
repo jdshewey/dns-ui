@@ -10,7 +10,7 @@ try {
 
 	$this->database->exec('
 	CREATE TABLE change (
-		id serial,
+		id NOT NULL AUTO_INCREMENT,
 		changeset_id integer NOT NULL,
 		before bytea,
 		after bytea,
@@ -129,34 +129,34 @@ try {
 	");
 
 	$this->database->exec('
-	ALTER TABLE ONLY change
+	ALTER TABLE change
 		ADD CONSTRAINT change_changeset_id_fkey FOREIGN KEY (changeset_id) REFERENCES changeset(id) ON DELETE CASCADE;
 	');
 
 	$this->database->exec('
-	ALTER TABLE ONLY changeset
+	ALTER TABLE changeset
 		ADD CONSTRAINT changeset_author_id_fkey FOREIGN KEY (author_id) REFERENCES "user"(id),
 		ADD CONSTRAINT changeset_requester_id_fkey FOREIGN KEY (requester_id) REFERENCES "user"(id),
 		ADD CONSTRAINT changeset_zone_id_fkey FOREIGN KEY (zone_id) REFERENCES zone(id) ON DELETE CASCADE;
 	');
 
 	$this->database->exec('
-	ALTER TABLE ONLY config
+	ALTER TABLE config
 		ADD CONSTRAINT config_default_ns_template_fkey FOREIGN KEY (default_ns_template) REFERENCES ns_template(id) ON DELETE SET NULL;
 	');
 
 	$this->database->exec('
-	ALTER TABLE ONLY pending_update
+	ALTER TABLE pending_update
 		ADD CONSTRAINT pending_change_zone_id_fkey FOREIGN KEY (zone_id) REFERENCES zone(id) ON DELETE CASCADE;
 	');
 
 	$this->database->exec('
-	ALTER TABLE ONLY user_alert
+	ALTER TABLE user_alert
 		ADD CONSTRAINT user_alert_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(id);
 	');
 
 	$this->database->exec('
-	ALTER TABLE ONLY zone_access
+	ALTER TABLE zone_access
 		ADD CONSTRAINT zone_admin_user_id_fkey FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE,
 		ADD CONSTRAINT zone_admin_zone_id_fkey FOREIGN KEY (zone_id) REFERENCES zone(id) ON DELETE CASCADE;
 	');
