@@ -85,7 +85,7 @@ try {
 		uid text,
 		name text,
 		email text,
-		auth_realm auth_realm,
+		auth_realm ENUM ("local","LDAP"),,
 		active integer,
 		admin integer DEFAULT 0 NOT NULL,
 		developer integer DEFAULT 0 NOT NULL,
