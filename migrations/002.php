@@ -7,8 +7,6 @@ $migration_name = 'Initial setup, converted to migration';
 try {
 	$this->database->exec('SELECT * FROM config');
 } catch(PDOException $e) {
-	$this->database->exec("CREATE TYPE access_level AS ENUM ('administrator', 'operator')");
-	$this->database->exec("CREATE TYPE auth_realm AS ENUM ('LDAP', 'local')");
 
 	$this->database->exec('
 	CREATE TABLE change (
@@ -17,7 +15,7 @@ try {
 		before bytea,
 		after bytea,
 		CONSTRAINT change_pkey PRIMARY KEY (id)
-	) WITH (OIDS=FALSE)
+	)
 	');
 
 	$this->database->exec('
@@ -31,7 +29,7 @@ try {
 		added integer DEFAULT 0 NOT NULL,
 		requester_id integer,
 		CONSTRAINT changeset_pkey PRIMARY KEY (id)
-	) WITH (OIDS=FALSE)
+	)
 	');
 
 	$this->database->exec('
@@ -40,7 +38,7 @@ try {
 		default_soa_template integer,
 		default_ns_template integer,
 		CONSTRAINT config_pkey PRIMARY KEY (id)
-	) WITH (OIDS=FALSE)
+	)
 	');
 	$this->database->exec('INSERT INTO "config" (id) VALUES (1)');
 
@@ -51,7 +49,7 @@ try {
 		nameservers text NOT NULL,
 		CONSTRAINT ns_template_pkey PRIMARY KEY (id),
 		CONSTRAINT ns_template_name_key UNIQUE (name)
-	) WITH (OIDS=FALSE)
+	)
 	');
 
 	$this->database->exec('
@@ -62,7 +60,7 @@ try {
 		request_date timestamp without time zone NOT NULL,
 		raw_data bytea NOT NULL,
 		CONSTRAINT pending_change_pkey PRIMARY KEY (id)
-	) WITH (OIDS=FALSE)
+	)
 	');
 
 	$this->database->exec('
@@ -78,7 +76,7 @@ try {
 		soa_ttl integer,
 		CONSTRAINT soa_template_pkey PRIMARY KEY (id),
 		CONSTRAINT soa_template_name_key UNIQUE (name)
-	) WITH (OIDS=FALSE)
+	)
 	');
 
 	$this->database->exec('
@@ -94,7 +92,7 @@ try {
 		csrf_token text,
 		CONSTRAINT user_pkey PRIMARY KEY (id),
 		CONSTRAINT user_uid_key UNIQUE (uid)
-	) WITH (OIDS=FALSE)
+	)
 	');
 
 	$this->database->exec('
@@ -105,7 +103,7 @@ try {
 		content text,
 		escaping integer,
 		CONSTRAINT user_alert_pkey PRIMARY KEY (id)
-	) WITH (OIDS=FALSE)
+	)
 	');
 
 	$this->database->exec('
@@ -118,16 +116,16 @@ try {
 		account text,
 		CONSTRAINT zone_pkey PRIMARY KEY (id),
 		CONSTRAINT zone_pdns_id_key UNIQUE (pdns_id)
-	) WITH (OIDS=FALSE)
+	)
 	');
 
 	$this->database->exec("
 	CREATE TABLE zone_access (
 		zone_id integer NOT NULL,
 		user_id integer NOT NULL,
-		level access_level DEFAULT 'administrator'::access_level NOT NULL,
+		level ENUM ('administrator', 'operator') NOT NULL,
 		CONSTRAINT zone_admin_pkey PRIMARY KEY (zone_id, user_id)
-	) WITH (OIDS=FALSE)
+	)
 	");
 
 	$this->database->exec('
